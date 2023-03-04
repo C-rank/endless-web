@@ -1,0 +1,47 @@
+<header>
+    <div id=header>
+        <h1><a href='/'>ENDLESS WAR</a></h1>
+    </div>
+    
+    <span id=currenttime class=navhanger>
+        It is currently <span id=timefield></span> in NLACakaNM.
+        <script>
+            var timefield = document.getElementById('timefield');
+    
+            setInterval(function(){
+                Ajax.get({
+                    target: '/time'
+                }).then(function(r){
+                    if(r.response){
+                        timefield.innerHTML = r.response;
+                    }
+                }).catch(function(r){
+                    console.log('Failed to get time:', r);
+                });
+            }, (60 * 1000));
+        </script>
+    </span>
+    <span id=suggestfield class=navhanger>
+        <a id=suggestlink>!suggest</a>
+    
+        <script>
+            var suggestlink = document.getElementById('suggestlink');
+        </script>
+    </span>
+    
+    <a href=/market/>
+        <img id=header_mkt class=header_btn src="{{ url_for('static', filename='/img/style/nav/graphicon.png') }}" alt="Market Graphs" title="View stock market performance graphs.">
+    </a>
+    <a href=/news/>
+        <img id=header_news class=header_btn src="{{ url_for('static', filename='/img/style/nav/newsiconslime.png') }}" alt="News" title="View patchnotes and news.">
+    </a>
+    <a href=/guide/>
+        <img id=header_help class=header_btn src="{{ url_for('static', filename='/img/style/nav/helpicon.png') }}" alt="Guide" title="Learn to play the game.">
+    </a>
+    <a href=/map/>
+        <img id=header_map class=header_btn src="{{ url_for('static', filename='/img/style/nav/mapicon.png') }}" alt="Map" title="View the NLACakaNM Map.">
+    </a>
+    <a href=/stats>
+        <img id=header_stats class=header_btn src="{{ url_for('static', filename='/img/style/nav/leaderboardicon.png') }}" alt="Leaderboards" title="Current live leaderboards.">
+    </a>    
+</header>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+        <meta charset="UTF-8">
+        <title>EW - {% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/ewx.css') }}">
+    {% endblock %}
+</head>
+<body>
+    <!-- Cool Top Nav Bar -->
+    {% include "nav.html "%}
+
+    {% block body %}{% endblock %}
+
+    <!-- Radical Footer -->
+    {% include "footer.html"%}
+</body>
+</html>
