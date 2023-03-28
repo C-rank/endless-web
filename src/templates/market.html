@@ -1,0 +1,74 @@
+{% extends 'ew.html' %}
+
+{% block title%}MARKET{% endblock %}
+
+{% block head %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" type="module"></script>
+    <script type=module src="{{ url_for('static', filename='js/marketGraphs.js') }}"></script>
+{% endblock%}
+
+{% block body %}
+<div id=content>
+    <div id=content_background>
+        <div id=content_body>
+            <div class=story>
+                <h2>
+                    Live Market Reports
+                </h2>
+                <div>
+                    <p>
+                        The SlimeCoin market reports price changes every
+                        fifteen minutes, and these charts are regenerated
+                        automatically every five. Click on a chart to view it
+                        full-size.
+                    </p>
+                </div>
+            </div>
+            <div class="story" style="padding: 0;">
+                <span style="background: black;">
+                    <marquee style="color: lime;">
+                        KFC: +1.009, PIZ: -0.982, TAC: +0.182
+                    </marquee>
+                </span>
+            </div>
+            <div class=story>
+                <h2>
+                    Last Week
+                </h2>
+                <div id="lastweekcharts">
+                    <div id="lastweek-market">
+                        <h3>Last Week's Market</h3>
+                        <canvas id="lastweek-market-chart"></canvas>
+                        <script>
+                            const lwChart = document.getElementById('lastweek-market-chart');
+                            newMarketGraph(ctx=lwChart);
+                        </script>
+                    </div>
+                    <div id="lastweek-market-log">
+                        <h3>Last Week's Market - Logarithmic</h3>
+                        <canvas id="lastweek-market-log-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class=story>
+                <h2>
+                    Lifetime
+                </h2>
+                <div id="lifetimecharts">
+                    <div id="lifetime-market">
+                        <h3>Lifetime Market</h3>
+                        <canvas id="lifetime-market-chart"></canvas>
+                        <script>
+                            
+                        </script>
+                    </div>
+                    <div id="lifetime-market-log">
+                        <h3>Lifetime Market - Logarithmic</h3>
+                        <canvas id="lifetime-market-log-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

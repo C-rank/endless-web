@@ -1,0 +1,257 @@
+{% extends 'ew.html' %}
+
+{% block title%}MAP{% endblock %}
+
+{% block head %}
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Online World Map" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+	<meta property="og:url" content="https://ew.krakissi.net/map/" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+	<meta property="og:image" content="https://ew.krakissi.net/img/style/nav/mapicon.png" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+	<meta property="og:description" content="Explore the districts of NLACakaNM and see gang activity" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+
+	<link href="{{ url_for('static', filename='css/zonePopup.css') }}" rel="stylesheet">
+	<script src="{{ url_for('static', filename='js/zonePopup.js') }}"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<style>
+
+		#content {
+			width: 75%;
+		}
+
+		.mapOverlay {
+			z-index: 1;
+			position: absolute;
+			fill:transparent;
+			stroke:transparent;
+		}
+
+		#mapHoverOverlay {
+			z-index: 3;
+		}
+
+		#mapHoverOverlay polygon {
+			fill: transparent;
+			stroke: transparent;
+			stroke-width: 5px;
+		}
+
+		#mapHoverOverlay polygon:hover {
+			fill:rgba(0, 0, 0, 0.6);
+			opacity: 1;
+			stroke: white;
+			stroke-width: 5px;
+		}
+
+		img.maplayer {
+			width: 100%;
+			pointer-events: none;
+			position: relative;
+			z-index: 0;
+		}
+
+		#hl_ctn {
+			pointer-events: none;
+			position: absolute;
+		}
+		img.mapoutline {
+			pointer-events: none;
+			width: 70%;
+		}
+
+		#ib_ctn {
+			pointer-events: none;
+			position: absolute;
+			top: 150px;
+		}
+		img.mapinfobox {
+			pointer-events: none;
+			width: 86.85%;
+			opacity: 0.95;
+		}
+
+		#cd_ctn {
+			pointer-events: none;
+			position: absolute;
+		}
+
+		#content_background {
+			position: absolute;
+		}
+
+		#countdown {
+			pointer-events: none;
+			padding: 0.2em 1em;
+			background-color: rgba(0, 0, 0, 0.6);
+			border-radius: 0 0em 0.4em 0.4em;
+			box-shadow: 0.1em 0.1em 0.2em black;
+			height: 48px;
+		}
+		#countdown div {
+			vertical-align: middle;
+			display: inline-block;
+			padding: none;
+			margin: none;
+			font-size: 200%;
+		}
+		#countdown div span {
+			padding: 0 0.2em;
+			font-weight: bold;
+			text-shadow: 2px 2px #111111;
+		}
+
+		#scoreboard {
+			pointer-events: none;
+			position: absolute;
+			top: 4.5em;
+			left: 3em;
+			padding: 0.2em 1em;
+			background-color: rgba(0, 0, 0, 0.6);
+			border-radius: 0 0em 0.4em 0.4em;
+			box-shadow: 0.1em 0.1em 0.2em black;
+			height: 48px;
+			position: relative;
+			top: 0;
+			z-index: 1;
+		}
+		#scoreboard img {
+			height: 48px;
+		}
+		#scoreboard div {
+			vertical-align: middle;
+			display: inline-block;
+			padding: none;
+			margin: none;
+			font-size: 200%;
+		}
+		#scoreboard div span {
+			padding: 0 0.2em;
+			font-weight: bold;
+			text-shadow: 2px 2px #111111;
+		}
+
+		#themap {
+			pointer-events: inherit;
+		}
+		#detailpins,
+		#detailnames {
+			display: none;
+		}
+
+		#negaslime {
+			pointer-events: none;
+			position: absolute;
+			top: 450px;
+			left: 580px;
+			width: 150px;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+
+	<div id=content>
+
+			<div id=content_background>
+			<span id=hl_ctn>
+				<img class=mapoutline id=hl>
+			</span>
+			<span id=ib_ctn>
+				<img class=mapinfobox id=ib>
+
+			</span>
+			<span id=cd_ctn>
+				<div id=countdown></div>
+			</span>
+
+			<div id=scoreboard>
+				<center>
+					<div><img src="{{ url_for('static', filename='img/icons/killers.png') }}" alt=Killers title=Killers></div>
+					<div><span style="color: #9649ff;"></span></div>
+					<div>|</div>
+					<div><span style="color: #f51969;"></span></div>
+					<div><img src="{{ url_for('static', filename='img/icons/rowdys.png') }}" alt=Rowdys title=Rowdys></div>
+				</center>
+			</div>
+
+			<div id=mapspacer></div>
+			<div id=content_body>
+			</div>
+		</div>
+		<div id="mapGraphic">
+			<svg width="100%" id="mapHoverOverlay" class="mapOverlay" viewBox="0 0 1400 840">
+				<polygon id="westglocksbury" alt="West Glocksbury" title="West Glocksbury" points="74,505,176,517,169,508,179,500,192,505,191,494,207,505,221,502,239,485,259,487,275,484,288,470,301,438,307,414,268,392,279,379,228,370,228,354,221,353,211,359,194,348,186,344,174,345,150,340,124,327,108,344,103,375,119,382,160,411,140,427,154,461,132,482,117,474,92,484" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="cratersville" alt="Cratersville" title="Cratersville" points="537,653,535,706,526,715,526,725,514,736,509,766,513,774,499,782,489,807,519,798,558,781,581,809,604,808,628,816,636,825,642,819,656,820,668,825,688,825,699,810,697,798,687,794,681,762,672,718,656,683,629,727,609,718,599,690,577,667,565,656" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="oozegardens" alt="Ooze Gardens" title="Ooze Gardens" points="489,616,471,635,459,653,459,665,437,677,354,783,382,799,402,786,411,770,428,758,435,753,444,738,454,734,463,738,469,746,469,757,476,775,495,794,502,783,514,778,510,764,515,736,523,727,523,718,530,711,532,674,537,653,520,627" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="southsleezeborough" alt="South Sleezeborough" title="South Sleezeborough" points="450,585,463,599,490,611,475,628,461,646,459,661,437,680,356,783,335,776,325,756,332,751,331,730,334,701,354,690,368,651,378,643,395,638,417,581,430,590,440,590" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="glocksbury" alt="Glocksbury" title="Glocksbury" points="281,375,269,392,306,412,296,447,281,479,260,487,245,484,226,499,207,501,208,517,314,513,325,517,461,507,457,490,442,475,431,454,417,433" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="northsleezeborough" alt="North Sleezeborough" title="North Sleezeborough" points="286,515,284,529,300,549,295,553,315,576,310,586,320,605,332,611,343,628,347,633,390,637,415,586,432,590,450,584,477,559,458,527,464,523,461,506,337,520,320,516" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="poudrinalley" alt="Poudrin Alley" title="Poudrin Alley" points="618,536,553,578,556,609,540,621,527,621,518,627,537,649,565,654,597,688,609,715,626,725,655,682,631,628,673,560,640,538" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="krakbay" alt="Krak Bay" title="Krak Bay" points="433,455,442,478,461,491,463,517,458,526,478,559,448,585,472,610,519,627,527,620,540,624,555,610,555,574,635,521,635,485,626,487,623,470,617,474,550,485,546,479,520,486,488,471,483,476" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="poloniumhill" alt="Polonium Hill" title="Polonium Hill" points="183,198,144,263,146,279,110,290,119,304,115,313,134,331,162,342,193,334,199,355,208,357,223,357,237,359,250,360,259,356,281,357,291,356,296,347,303,341,319,344,327,346,340,339,352,335,363,331,373,324,370,312,360,292,352,283,324,271,291,271,258,254,245,238,224,239,202,221" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="charcoalpark" alt="Charcoal Park" title="Charcoal Park" points="121,130,161,116,196,96,263,141,253,178,263,183,267,210,307,239,292,266,269,257,253,247,244,239,220,235,206,224,190,202,161,181,155,158" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="toxington" alt="Toxington" title="Toxington" points="196,94,227,73,280,49,300,62,309,83,348,95,346,103,356,101,370,124,380,116,393,120,404,118,445,179,464,214,448,219,420,207,375,233,358,268,290,267,310,244,265,214,264,193,255,178,265,145" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="vandalpark" alt="Vandal Park" title="Vandal Park" points="232,354,228,364,281,375,417,434,421,419,429,400,429,376,435,364,432,351,421,349,409,339,403,332,401,318,398,308,388,298,377,298,368,303" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="wreckington" alt="Wreckington" title="Wreckington" points="734,689,718,694,708,708,706,722,720,737,749,766,743,771,760,782,758,808,727,823,701,789,687,789,677,724,657,685,666,672,707,658,733,648,769,617,787,617,790,626,797,624,832,632,869,632,891,640,907,664,907,683,897,685,869,719,850,714,844,700,828,693,779,709,764,708,756,700" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="rowdyroughhouse" alt="Rowdy Roughhouse" title="Rowdy Roughhouse" points="703,567,673,568,633,627,659,684,671,667,711,656,732,647,777,609,855,625,859,616,852,611,858,601,811,560,800,569,790,570,801,551,780,528,764,521,745,522,718,552" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="gatlingsdale" alt="Gatlingsdale" title="Gatlingsdale" points="442,374,496,382,514,370,525,343,525,329,516,313,464,215,452,220,425,207,379,231,362,268,322,268,354,282,368,306,375,298,385,297,394,297,408,317,409,333,416,339,429,340,440,346" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="copkilltown" alt="Cop Killtown" title="Cop Killtown" points="437,374,492,384,514,370,521,343,581,333,603,345,614,344,631,376,645,381,660,402,621,432,618,438,607,448,595,445,483,464,461,460,443,453,433,442,425,429" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="astatineheights" alt="Astatine Heights" title="Astatine Heights" points="427,153,526,328,524,341,576,332,602,340,614,340,599,302,655,301,660,286,636,244,636,231,605,186,592,174,577,131,558,158,527,160,503,141,493,134,482,134,473,131,447,131" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="arsonbrook" alt="Arsonbrook" title="Arsonbrook" points="655,298,677,298,697,289,686,275,680,236,678,221,686,192,697,187,715,168,718,158,718,139,736,46,697,43,692,67,673,78,662,80,610,58,588,38,546,40,589,172,638,234,635,246,662,282" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="brawlden" alt="Brawlden" title="Brawlden" points="739,51,715,144,719,159,713,174,725,184,725,192,753,201,796,198,856,227,860,245,868,247,877,228,894,223,923,224,937,217,937,207,937,200,933,187,926,177,927,155,931,138,947,118,941,106,932,104,924,97,890,78,845,80,829,96,816,87,806,89,788,59,753,47,748,48" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="assaultflatsbeach" alt="Assault Flats Beach" title="Assault Flats Beach" points="1089,147,1077,153,1058,184,1061,228,1051,238,1061,281,1084,297,1094,297,1099,287,1119,282,1114,257,1125,223,1151,181,1190,140,1221,120,1277,92,1312,77,1321,82,1324,73,1312,59,1272,43,1257,48,1250,67,1171,129,1161,120,1148,116,1147,124,1152,135,1141,146,1145,153,1129,167" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="vagrantscorner" alt="Vagrant's Corner" title="Vagrant's Corner" points="913,387,906,381,967,320,967,313,973,302,991,298,999,287,995,281,1014,278,1014,271,1049,243,1059,271,1064,281,1084,297,1098,299,1103,289,1116,284,1135,292,1127,315,1129,329,1132,340,1132,363,1135,373,1129,380,1140,396,1115,401,1109,399,1103,402,1080,401,1080,387,1096,392,1101,382,1094,385,1082,380,1069,386,1057,382,1053,395,1053,406,1044,411,1032,411,1020,393,999,384,986,379,976,384,971,397,959,396" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="greenlightdistrict" alt="Green Light District" title="Green Light District" points="796,438,793,450,800,458,795,464,817,484,814,491,827,501,842,489,860,487,863,480,870,487,874,479,876,448,861,419,873,416,873,408,908,386,933,349,894,360,880,354,874,356,868,346,853,335,838,335,829,348,814,356,814,375,808,390,809,398,805,411,797,402,791,408,791,421" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="slimesend" alt="Slime's End" title="Slime's End" points="1079,400,1099,402,1106,396,1115,400,1142,400,1135,372,1150,379,1166,377,1187,385,1195,397,1190,407,1171,409,1161,422,1158,447,1159,464,1164,475,1166,492,1166,507,1166,522,1169,538,1174,546,1167,553,1156,548,1145,564,1138,583,1148,606,1161,617,1172,615,1189,633,1200,663,1194,673,1192,700,1185,705,1174,699,1164,682,1164,674,1153,659,1151,651,1142,647,1141,637,1127,620,1133,615,1109,585,1109,574,1117,546,1131,553,1138,541,1130,534,1141,511,1124,504,1106,497,1094,502,1080,510,1056,502,1046,497,1041,487,1030,485,1022,469,1032,444,1048,443,1053,424,1044,421,1058,393,1088,386,1084,392" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="slimesend" alt="Slime's End" title="Slime's End" points="1090,520,1101,522,1106,532,1103,541,1093,539,1084,528" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="downtown" alt="Downtown NLACakaNM" title="Downtown NLACakaNM" points="685,567,641,537,617,536,638,521,634,489,624,473,638,461,638,448,641,431,659,428,672,413,694,408,712,416,709,422,730,414,746,422,754,418,765,431,764,455" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="littlechernobyl" alt="Little Chernobyl" title="Little Chernobyl" points="710,172,726,178,730,191,757,202,788,195,862,226,860,244,874,261,870,281,846,292,812,309,780,303,778,294,767,292,754,292,707,275,699,259,699,246,688,242,694,236,689,224,692,203,696,194,698,191" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="newnewyonkers" alt="New New Yonkers" title="New New Yonkers" points="937,210,939,197,929,177,926,162,926,144,934,129,947,116,964,106,994,84,1023,71,1051,80,1069,108,1070,134,1072,147,1078,152,1058,178,1058,203,1059,228,1046,242,1025,246,1015,251,997,250,992,244,976,238,960,224" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="oldnewyonkers" alt="Old New Yonkers" title="Old New Yonkers" points="936,210,955,219,973,238,990,244,1001,254,1015,252,1023,244,1043,245,1014,265,1006,266,1002,275,983,273,973,273,974,281,965,285,954,296,960,308,954,320,937,330,916,349,898,353,889,351,886,344,881,338,870,338,848,328,828,323,824,332,817,332,807,313,869,285,874,270,870,260,864,247,874,231,891,221,923,223" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="juviesrow" alt="Juvie's Row" title="Juvie's Row" points="864,419,877,449,877,475,848,525,890,567,926,621,942,621,957,586,970,570,980,569,986,578,996,576,1004,590,1021,601,1030,596,1023,590,1052,579,1051,549,1044,543,1036,541,1027,534,995,522,995,510,1005,510,1009,504,1000,485,1027,437,1000,414,986,412,970,437,959,443,953,452,948,440,960,424,950,405,962,396,921,387,917,392,907,387,877,406,875,413" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="smogsburg" alt="Smogsburg" title="Smogsburg" points="598,301,633,374,644,381,670,411,681,405,694,405,704,411,715,409,717,413,739,405,758,400,760,411,771,408,788,384,788,361,795,359,796,350,796,335,787,328,750,313,735,307,725,306,718,303,707,294,694,292,680,302" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="dreadford" alt="Dreadford" title="Dreadford" points="98,588,103,636,126,674,142,677,142,687,160,694,168,709,173,720,191,718,200,708,212,696,227,695,223,678,234,662,252,631,273,620,275,599,264,601,262,593,207,575,186,580" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="jaywalkerplain" alt="Jaywalker Plain" title="Jaywalker Plain" points="76,510,98,515,107,515,177,521,185,534,200,532,207,518,285,516,284,531,297,548,295,555,311,576,297,588,292,598,285,595,268,600,263,591,208,576,196,578,184,581,100,588,85,574,93,547" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="crookline" alt="Crookline" title="Crookline" points="310,584,321,606,333,609,338,625,347,628,373,635,373,647,364,651,357,669,348,692,336,698,335,716,300,748,296,762,265,787,247,792,238,799,189,777,186,767,173,740,174,722,197,718,211,699,228,695,223,679,239,657" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="maimridge" alt="Maimridge" title="Maimridge" points="288,49,297,49,315,46,323,31,344,27,406,10,416,22,445,26,448,19,468,14,506,25,545,40,576,130,558,158,525,160,510,151,499,136,488,137,471,131,450,134,430,153,405,118,380,119,370,127,361,103,348,101,347,96,312,85" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+			</svg>
+			<svg width="100%" id="mapTerritoryOverlay" class="mapOverlay" viewBox="0 0 1400 840">
+				<polygon id="westglocksbury" alt="West Glocksbury" title="West Glocksbury" points="74,505,176,517,169,508,179,500,192,505,191,494,207,505,221,502,239,485,259,487,275,484,288,470,301,438,307,414,268,392,279,379,228,370,228,354,221,353,211,359,194,348,186,344,174,345,150,340,124,327,108,344,103,375,119,382,160,411,140,427,154,461,132,482,117,474,92,484" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="cratersville" alt="Cratersville" title="Cratersville" points="537,653,535,706,526,715,526,725,514,736,509,766,513,774,499,782,489,807,519,798,558,781,581,809,604,808,628,816,636,825,642,819,656,820,668,825,688,825,699,810,697,798,687,794,681,762,672,718,656,683,629,727,609,718,599,690,577,667,565,656" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="oozegardens" alt="Ooze Gardens" title="Ooze Gardens" points="489,616,471,635,459,653,459,665,437,677,354,783,382,799,402,786,411,770,428,758,435,753,444,738,454,734,463,738,469,746,469,757,476,775,495,794,502,783,514,778,510,764,515,736,523,727,523,718,530,711,532,674,537,653,520,627" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="southsleezeborough" alt="South Sleezeborough" title="South Sleezeborough" points="450,585,463,599,490,611,475,628,461,646,459,661,437,680,356,783,335,776,325,756,332,751,331,730,334,701,354,690,368,651,378,643,395,638,417,581,430,590,440,590" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="glocksbury" alt="Glocksbury" title="Glocksbury" points="281,375,269,392,306,412,296,447,281,479,260,487,245,484,226,499,207,501,208,517,314,513,325,517,461,507,457,490,442,475,431,454,417,433" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="northsleezeborough" alt="North Sleezeborough" title="North Sleezeborough" points="286,515,284,529,300,549,295,553,315,576,310,586,320,605,332,611,343,628,347,633,390,637,415,586,432,590,450,584,477,559,458,527,464,523,461,506,337,520,320,516" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="poudrinalley" alt="Poudrin Alley" title="Poudrin Alley" points="618,536,553,578,556,609,540,621,527,621,518,627,537,649,565,654,597,688,609,715,626,725,655,682,631,628,673,560,640,538" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="krakbay" alt="Krak Bay" title="Krak Bay" points="433,455,442,478,461,491,463,517,458,526,478,559,448,585,472,610,519,627,527,620,540,624,555,610,555,574,635,521,635,485,626,487,623,470,617,474,550,485,546,479,520,486,488,471,483,476" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="poloniumhill" alt="Polonium Hill" title="Polonium Hill" points="183,198,144,263,146,279,110,290,119,304,115,313,134,331,162,342,193,334,199,355,208,357,223,357,237,359,250,360,259,356,281,357,291,356,296,347,303,341,319,344,327,346,340,339,352,335,363,331,373,324,370,312,360,292,352,283,324,271,291,271,258,254,245,238,224,239,202,221" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="charcoalpark" alt="Charcoal Park" title="Charcoal Park" points="121,130,161,116,196,96,263,141,253,178,263,183,267,210,307,239,292,266,269,257,253,247,244,239,220,235,206,224,190,202,161,181,155,158" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="toxington" alt="Toxington" title="Toxington" points="196,94,227,73,280,49,300,62,309,83,348,95,346,103,356,101,370,124,380,116,393,120,404,118,445,179,464,214,448,219,420,207,375,233,358,268,290,267,310,244,265,214,264,193,255,178,265,145" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="vandalpark" alt="Vandal Park" title="Vandal Park" points="232,354,228,364,281,375,417,434,421,419,429,400,429,376,435,364,432,351,421,349,409,339,403,332,401,318,398,308,388,298,377,298,368,303" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="wreckington" alt="Wreckington" title="Wreckington" points="734,689,718,694,708,708,706,722,720,737,749,766,743,771,760,782,758,808,727,823,701,789,687,789,677,724,657,685,666,672,707,658,733,648,769,617,787,617,790,626,797,624,832,632,869,632,891,640,907,664,907,683,897,685,869,719,850,714,844,700,828,693,779,709,764,708,756,700" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="rowdyroughhouse" alt="Rowdy Roughhouse" title="Rowdy Roughhouse" points="703,567,673,568,633,627,659,684,671,667,711,656,732,647,777,609,855,625,859,616,852,611,858,601,811,560,800,569,790,570,801,551,780,528,764,521,745,522,718,552" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="gatlingsdale" alt="Gatlingsdale" title="Gatlingsdale" points="442,374,496,382,514,370,525,343,525,329,516,313,464,215,452,220,425,207,379,231,362,268,322,268,354,282,368,306,375,298,385,297,394,297,408,317,409,333,416,339,429,340,440,346" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="copkilltown" alt="Cop Killtown" title="Cop Killtown" points="437,374,492,384,514,370,521,343,581,333,603,345,614,344,631,376,645,381,660,402,621,432,618,438,607,448,595,445,483,464,461,460,443,453,433,442,425,429" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="astatineheights" alt="Astatine Heights" title="Astatine Heights" points="427,153,526,328,524,341,576,332,602,340,614,340,599,302,655,301,660,286,636,244,636,231,605,186,592,174,577,131,558,158,527,160,503,141,493,134,482,134,473,131,447,131" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="arsonbrook" alt="Arsonbrook" title="Arsonbrook" points="655,298,677,298,697,289,686,275,680,236,678,221,686,192,697,187,715,168,718,158,718,139,736,46,697,43,692,67,673,78,662,80,610,58,588,38,546,40,589,172,638,234,635,246,662,282" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="brawlden" alt="Brawlden" title="Brawlden" points="739,51,715,144,719,159,713,174,725,184,725,192,753,201,796,198,856,227,860,245,868,247,877,228,894,223,923,224,937,217,937,207,937,200,933,187,926,177,927,155,931,138,947,118,941,106,932,104,924,97,890,78,845,80,829,96,816,87,806,89,788,59,753,47,748,48" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="assaultflatsbeach" alt="Assault Flats Beach" title="Assault Flats Beach" points="1089,147,1077,153,1058,184,1061,228,1051,238,1061,281,1084,297,1094,297,1099,287,1119,282,1114,257,1125,223,1151,181,1190,140,1221,120,1277,92,1312,77,1321,82,1324,73,1312,59,1272,43,1257,48,1250,67,1171,129,1161,120,1148,116,1147,124,1152,135,1141,146,1145,153,1129,167" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="vagrantscorner" alt="Vagrant's Corner" title="Vagrant's Corner" points="913,387,906,381,967,320,967,313,973,302,991,298,999,287,995,281,1014,278,1014,271,1049,243,1059,271,1064,281,1084,297,1098,299,1103,289,1116,284,1135,292,1127,315,1129,329,1132,340,1132,363,1135,373,1129,380,1140,396,1115,401,1109,399,1103,402,1080,401,1080,387,1096,392,1101,382,1094,385,1082,380,1069,386,1057,382,1053,395,1053,406,1044,411,1032,411,1020,393,999,384,986,379,976,384,971,397,959,396" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="greenlightdistrict" alt="Green Light District" title="Green Light District" points="796,438,793,450,800,458,795,464,817,484,814,491,827,501,842,489,860,487,863,480,870,487,874,479,876,448,861,419,873,416,873,408,908,386,933,349,894,360,880,354,874,356,868,346,853,335,838,335,829,348,814,356,814,375,808,390,809,398,805,411,797,402,791,408,791,421" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="slimesend" alt="Slime's End" title="Slime's End" points="1079,400,1099,402,1106,396,1115,400,1142,400,1135,372,1150,379,1166,377,1187,385,1195,397,1190,407,1171,409,1161,422,1158,447,1159,464,1164,475,1166,492,1166,507,1166,522,1169,538,1174,546,1167,553,1156,548,1145,564,1138,583,1148,606,1161,617,1172,615,1189,633,1200,663,1194,673,1192,700,1185,705,1174,699,1164,682,1164,674,1153,659,1151,651,1142,647,1141,637,1127,620,1133,615,1109,585,1109,574,1117,546,1131,553,1138,541,1130,534,1141,511,1124,504,1106,497,1094,502,1080,510,1056,502,1046,497,1041,487,1030,485,1022,469,1032,444,1048,443,1053,424,1044,421,1058,393,1088,386,1084,392" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="slimesend" alt="Slime's End" title="Slime's End" points="1090,520,1101,522,1106,532,1103,541,1093,539,1084,528" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="downtown" alt="Downtown NLACakaNM" title="Downtown NLACakaNM" points="685,567,641,537,617,536,638,521,634,489,624,473,638,461,638,448,641,431,659,428,672,413,694,408,712,416,709,422,730,414,746,422,754,418,765,431,764,455" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="littlechernobyl" alt="Little Chernobyl" title="Little Chernobyl" points="710,172,726,178,730,191,757,202,788,195,862,226,860,244,874,261,870,281,846,292,812,309,780,303,778,294,767,292,754,292,707,275,699,259,699,246,688,242,694,236,689,224,692,203,696,194,698,191" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="newnewyonkers" alt="New New Yonkers" title="New New Yonkers" points="937,210,939,197,929,177,926,162,926,144,934,129,947,116,964,106,994,84,1023,71,1051,80,1069,108,1070,134,1072,147,1078,152,1058,178,1058,203,1059,228,1046,242,1025,246,1015,251,997,250,992,244,976,238,960,224" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="oldnewyonkers" alt="Old New Yonkers" title="Old New Yonkers" points="936,210,955,219,973,238,990,244,1001,254,1015,252,1023,244,1043,245,1014,265,1006,266,1002,275,983,273,973,273,974,281,965,285,954,296,960,308,954,320,937,330,916,349,898,353,889,351,886,344,881,338,870,338,848,328,828,323,824,332,817,332,807,313,869,285,874,270,870,260,864,247,874,231,891,221,923,223" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="juviesrow" alt="Juvie's Row" title="Juvie's Row" points="864,419,877,449,877,475,848,525,890,567,926,621,942,621,957,586,970,570,980,569,986,578,996,576,1004,590,1021,601,1030,596,1023,590,1052,579,1051,549,1044,543,1036,541,1027,534,995,522,995,510,1005,510,1009,504,1000,485,1027,437,1000,414,986,412,970,437,959,443,953,452,948,440,960,424,950,405,962,396,921,387,917,392,907,387,877,406,875,413" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="smogsburg" alt="Smogsburg" title="Smogsburg" points="598,301,633,374,644,381,670,411,681,405,694,405,704,411,715,409,717,413,739,405,758,400,760,411,771,408,788,384,788,361,795,359,796,350,796,335,787,328,750,313,735,307,725,306,718,303,707,294,694,292,680,302" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="dreadford" alt="Dreadford" title="Dreadford" points="98,588,103,636,126,674,142,677,142,687,160,694,168,709,173,720,191,718,200,708,212,696,227,695,223,678,234,662,252,631,273,620,275,599,264,601,262,593,207,575,186,580" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="jaywalkerplain" alt="Jaywalker Plain" title="Jaywalker Plain" points="76,510,98,515,107,515,177,521,185,534,200,532,207,518,285,516,284,531,297,548,295,555,311,576,297,588,292,598,285,595,268,600,263,591,208,576,196,578,184,581,100,588,85,574,93,547" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="crookline" alt="Crookline" title="Crookline" points="310,584,321,606,333,609,338,625,347,628,373,635,373,647,364,651,357,669,348,692,336,698,335,716,300,748,296,762,265,787,247,792,238,799,189,777,186,767,173,740,174,722,197,718,211,699,228,695,223,679,239,657" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+				<polygon id="maimridge" alt="Maimridge" title="Maimridge" points="288,49,297,49,315,46,323,31,344,27,406,10,416,22,445,26,448,19,468,14,506,25,545,40,576,130,558,158,525,160,510,151,499,136,488,137,471,131,450,134,430,153,405,118,380,119,370,127,361,103,348,101,347,96,312,85" onmouseover="fadeInBox(this)" onmouseout="fadeOutBox(this)" />
+			</svg>
+			<img class=maplayer id=themap src="{{ url_for('static', filename='img/parts/basemap.png') }}">
+		</div>
+
+	</div>
+{% endblock %}

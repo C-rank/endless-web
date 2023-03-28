@@ -5,7 +5,7 @@
 
 	padding: 0px;
 	background-color: #AA0000;
-	background: url(https://i.imgur.com/OukTfWI.png);
+	background: url(../img/parts/static.png);
 	background-position: 0px 0px;
 	background-repeat: repeat;
 	position: absolute;
@@ -19,6 +19,7 @@
 	top: 100px;
 	left: 100px;
 	opacity:0%;
+	z-index: 10;
 }
 
 @keyframes animateStatic {

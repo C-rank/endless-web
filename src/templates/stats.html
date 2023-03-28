@@ -1,0 +1,138 @@
+{% extends 'ew.html' %}
+
+{% block title%}STATS{% endblock %}
+
+{% block head %}
+	<style>
+		.leaderboard {
+			display: inline-block;
+
+			padding: 1em 1em 2em 1em;
+			background-color: rgba(0, 0, 0, 0.6);
+			margin: 1.5em 1em;
+			border-radius: 0.4em;
+			box-shadow: 0.1em 0.1em 0.2em black;
+			position: relative;
+		}
+		.leaderboard td {
+			padding: 0.2em 0.3em;
+		}
+		.leaderboard td.rl {
+			text-align: right;
+			font-family: monospace;
+		}
+		.leaderboard td img {
+			height: 1em;
+		}
+		.leaderboard h2 {
+			text-transform: uppercase;
+		}
+
+		#kingpin_scoreboard {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			width: 800px;
+		}
+		#kingpin_scoreboard div {
+			display: inline-block;
+			font-size: 40px;
+			vertical-align: middle;
+		}
+		#kingpin_scoreboard div span {
+			padding: 0 0.2em;
+			font-weight: bold;
+			text-shadow: 2px 2px #111111;
+		}
+		#kingpin_scoreboard div img {
+			height: 48px;
+		}
+	</style>
+{% endblock%}
+
+{% block body %}
+	<div id=content>
+		<div id=content_background>
+
+			<div class=leaderboard id=kingpin_scoreboard>
+				<center>
+					<div><img src=/img/icons/copkiller.png alt=Ben title=Ben></div>
+					<div><span style="color: #9649ff;"><????rfck:kingpin_slime killers></span></div>
+					<div>|</div>
+					<div><span style="color: #f51969;"><????rfck:kingpin_slime rowdys></span></div>
+					<div><img src=/img/icons/rowdyfucker.png alt=Munchy title=Munchy></div>
+				<br>
+					<div><span style="color: #9649ff;"><????rfck:kingpin_slime krak></span></div>
+					<div><img src=/img/icons/krak.png alt=Krak title=Krak></div>
+				</center>
+			</div>
+
+			<div class=leaderboard>
+				<h2>Slimiest</h2>
+				<table>
+					<tr>
+						<th>Slime</th>
+						<th>Player</th>
+					</tr>
+					<????rfck:top_playerstat slimes>
+				</table>
+			</div>
+
+			<div class=leaderboard>
+				<h2>SlimeCoin Barons</h2>
+				<table>
+					<tr>
+						<th>SlimeCoin</th>
+						<th>Player</th>
+					</tr>
+					<????rfck:top_playerstat slimecoin>
+				</table>
+			</div>
+
+			<div class=leaderboard>
+				<h2>Anti-Slimiest</h2>
+				<table>
+					<tr>
+						<th>Anti-Slime</th>
+						<th>Ghost of Player</th>
+					</tr>
+					<????rfck:top_playerstat slimes -1 True>
+				</table>
+			</div>
+
+			<div class=leaderboard>
+				<h2>Most Wanted</h2>
+				<table>
+					<tr>
+						<th>Bounty</th>
+						<th>Player</th>
+					</tr>
+					<????rfck:top_playerstat bounty 100>
+				</table>
+			</div>
+
+			<div class=leaderboard>
+				<h2>Top Slimeoids</h2>
+				<table>
+					<tr>
+						<th>Clout</th>
+						<th>Slimeoid</th>
+					</tr>
+					<????rfck:top_slimeoids>
+				</table>
+			</div>
+
+			<div class=leaderboard>
+				<h2>Streets Controlled</h2>
+				<table>
+					<tr>
+						<th>Faction</th>
+						<th>Count</th>
+					</tr>
+					<????rfck:top_districts>
+				</table>
+			</div>
+		</div>
+
+	</div>
+{% endblock %}

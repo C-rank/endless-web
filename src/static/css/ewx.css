@@ -10,7 +10,7 @@ body {
 	background: #051a05;
 	/*background-color: #101010;*/
 	font-size: 125%;
-	cursor: url('/img/style/ew.cur'), pointer;
+	cursor: url('/static/img/style/ew.cur'), pointer;
 }
 a {
 	color: #7fabff;
@@ -61,44 +61,31 @@ ul li:before {
 	padding: 1em;
 	height: 2.5em;
 	font-family: 'Ranchers', 'Comic Sans', cursive;
+	display: flex;
+	align-items: center;
 }
 #header h1 {
 	margin: 0;
+	flex-grow: 1;
+	font-size: 2.5em;
 }
 
 .header_btn {
-	position:absolute;
 	margin: 0;
 	padding: 0;
-	top: 0;
 	height: 4.5em;
-	z-index: 2;
 	transition: 0.1s;
+	border-bottom: solid 5px transparent;
 }
 .header_btn:hover {
 	border-bottom: solid 5px red;
-}
-#header_mkt {
-	right: 0em;
-	/*filter: grayscale(100%);*/
-}
-#header_map {
-	right: 4.6em;
-}
-#header_news {
-	right: 9.2em;
-}
-#header_help {
-	right: 18.4em;
-}
-#header_stats {
-	right: 13.8em;
+	filter: saturate(200%)
 }
 
 #content_background {
 	padding-top: 0.1em;
 	padding-bottom: 225px;
-	background: url('$slime_img') top right no-repeat, url('/img/style/ew-bg.png') repeat fixed;
+	background: url('/static/img/style/ew-bg.png') repeat fixed;
 	background-size: 50%, 2px;
 }
 #content_body {

@@ -411,33 +411,36 @@ var zones = [
 
 var lett_arr = ["a", "b", "c", "d", "e", "f"];
 
-function fadeInBox(zoneNum, street_text) {
+function fadeInBox(zone) {
 	//check if infobox exists for a given zone and create it if it doesn't exist
-	var textout = street_text;
-	zoneBox = document.getElementById(zones[zoneNum].zoneID);
+	var zoneID = zone.id
+	var zoneInfo = zones.find(z => z.poi_id === zoneID)
+	var contentBox = document.getElementById("content_background")
+	var xOffset = contentBox.offsetWidth / 10;
+	var zoneBox = document.getElementById(zoneInfo.zoneID);
 	if (zoneBox == null){
 
 		//create the elements of zone infobox
 		var newInfoboxBorder = document.createElement("div");
 		newInfoboxBorder.className = "infoboxBorder";
-		newInfoboxBorder.id = zones[zoneNum].zoneID;
+		newInfoboxBorder.id = zoneInfo.zoneID;
 
 		var newInfoBoxInside = document.createElement("div");
 		newInfoBoxInside.className = "infoboxInside";
 
 		var newZoneName = document.createElement("div");
 		newZoneName.className = "zoneName";
-		newZoneName.innerHTML = zones[zoneNum].zoneName.toUpperCase();
+		newZoneName.innerHTML = zoneInfo.zoneName.toUpperCase();
 
 		var newPropertyClass = document.createElement("div");
 		newPropertyClass.className = "propertyClass";
-		newPropertyClass.innerHTML = "PROPERTY CLASS: " + zones[zoneNum].propertyClass.toUpperCase();
+		newPropertyClass.innerHTML = "PROPERTY CLASS: " + zoneInfo.propertyClass.toUpperCase();
 
 
 		var subzoneText = "SUB-ZONES:<br>"
 		var i;
-		for (i = 0; i < zones[zoneNum].subzones.length; i++) {
-			subzoneText += "\xa0-" + zones[zoneNum].subzones[i] + "<br>";
+		for (i = 0; i < zoneInfo.subzones.length; i++) {
+			subzoneText += "\xa0-" + zoneInfo.subzones[i] + "<br>";
 		}
 		var newSubzones = document.createElement("div");
 		newSubzones.className = "subzones";
@@ -445,25 +448,16 @@ function fadeInBox(zoneNum, street_text) {
 
 		var streetText = "CAPTURE PROGRESS:<br>"
 		
-		streetText += textout;
-		
-		//for (i = 0; i < zones[zoneNum].streets.length; i++){
-		//	var replacetext = zones[zoneNum].poi_id + "street" + lett_arr[i];
-		//	streetText = streetText.replace(replacetext, zones[zoneNum].streets[i].toUpperCase())
-		//}
-		
-		
 		var newStreets = document.createElement("div");
 		newStreets.className = "streets";
 		newStreets.innerHTML = streetText;
-		//.toUpperCase()
 		var newQuote = document.createElement("div");
 		newQuote.className = "quote";
-		newQuote.innerHTML = zones[zoneNum].quote.toUpperCase();
+		newQuote.innerHTML = zoneInfo.quote.toUpperCase();
 
 		var newQuoteAttribution = document.createElement("div");
 		newQuoteAttribution.className = "quoteAttribution";
-		newQuoteAttribution.innerHTML = "-" + zones[zoneNum].quotePerson.toUpperCase();
+		newQuoteAttribution.innerHTML = "-" + zoneInfo.quotePerson.toUpperCase();
 
 		//stitch elements together
 		newInfoBoxInside.appendChild(newZoneName);
@@ -476,34 +470,42 @@ function fadeInBox(zoneNum, street_text) {
 		newInfoboxBorder.appendChild(newInfoBoxInside);
 
 		//add infobox to document
-		document.getElementById("content_background").appendChild(newInfoboxBorder); /*change this line to insert elemtent to krakissi map	. I think the id you want is "content_background"*/
+		contentBox.appendChild(newInfoboxBorder);
 	}
 
 
 	//animate zonebox fade in
-	zoneBox2 = document.getElementById(zones[zoneNum].zoneID);
+	zoneBox2 = document.getElementById(zoneInfo.zoneID);
 	zoneBox2.style.display = "initial";
-	var name = "#" + zones[zoneNum].zoneID;
+	var name = "#" + zoneInfo.zoneID;
 	$(name).stop(true,true);
-	$(name).animate({left: zones[zoneNum].xPos,top: zones[zoneNum].yPos + 5, opacity: "0%"}, 1);
-	$(name).animate({left: zones[zoneNum].xPos,top: zones[zoneNum].yPos, opacity: "100%"}, 200);
+	// Figure out where to put the dang thing
+	var bRect = zone.getBoundingClientRect()
+	contentOffset = contentBox.offsetWidth
+
+	// Otherwise do it normal style
+	console.log("normal")
+	$(name).animate({left: bRect.right + xOffset - contentOffset, top: bRect.top + 5, opacity: "0%"}, 1);
+	$(name).animate({left: bRect.right + xOffset - contentOffset, opacity: "100%"}, 200);
+
 }
 
 
 
-function fadeOutBox(zoneNum) {
+function fadeOutBox(zone) {
 	//animate fade out
-	var name = "#" + zones[zoneNum].zoneID;
+	var zoneInfo = zones.find(z => z.poi_id === zone.id)
+	var name = "#" + zoneInfo.zoneID;
 	$(name).stop(true,true);
 	$(name).animate({top: '+=5px', opacity: "0%"}, 200);
 
 	//call setInvisible after 200 milliseconds to get infobox out of the way
 	//if left as 0% opacity alone it will block mousing over the map
-	zoneBox = document.getElementById(zones[zoneNum].zoneID);
-	setTimeout(setInvisible(zoneNum), 200);
+	zoneBox = document.getElementById(zoneInfo.zoneID);
+	setTimeout(setInvisible(zoneInfo.zoneID), 200);
 }
 
 
 function setInvisible(zoneid){
-	document.getElementById(zones[zoneid].zoneID).style.display = "none";
+	document.getElementById(zoneid).style.display = "none";
 }
